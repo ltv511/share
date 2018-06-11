@@ -1,0 +1,99 @@
+" Maintainer: Luke Valenta
+" Tested: Mac OS X 10.12.6, Debian GNU/Linux 8.10 (jessie)
+" Last Modified: June 11, 2018
+
+" detect if terminal has color
+if $TERM == "xterm-256color"
+    set t_Co=256
+endif
+
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+if &t_Co > 2 || has("gui_running")
+  syntax on
+  set hlsearch
+endif
+
+" set the color scheme
+colorscheme darkblue
+
+" set the minimum number of lines that will appear above and below the cursor
+set scrolloff=5
+
+" split to the right and below with vsp and sp, respectively, since this is more natural than the defaults
+set splitright
+set splitbelow
+
+" copy indentation of the previous line
+set smartindent
+
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+
+  " Enable file type detection.
+  " Use the default filetype settings, so that mail gets 'tw' set to 72,
+  " 'cindent' is on in C files, etc.
+  " Also load indent files, to automatically do language-dependent indenting.
+  filetype plugin indent on
+
+  " Put these in an autocmd group, so that we can delete them easily.
+  augroup vimrcEx
+  au!
+
+  " For all text files set 'textwidth' to 78 characters.
+  autocmd FileType text setlocal textwidth=78
+
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it when the position is invalid or when inside an event handler
+  " (happens when dropping a file on gvim).
+  " Also don't do it when the mark is in the first line, that is the default
+  " position when opening a file.
+  autocmd BufReadPost *
+    \ if line("'\"") > 1 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+
+  augroup END
+
+else
+
+  set autoindent		" always set autoindenting on
+
+endif " has("autocmd")
+
+" ignore case while searching unless the pattern contains an uppercase character
+set ignorecase
+set smartcase
+
+set ruler		" show the cursor position all the time
+set showcmd		" display incomplete commands
+set incsearch		" do incremental searching
+
+" add line numbers
+set number
+
+" allow backspacing over everything in insert mode
+set backspace=indent,eol,start
+
+" tab navigation like firefox in 'normal' mode
+nnoremap <S-tab> :tabprevious<CR>
+nnoremap <tab>   :tabnext<CR>
+nnoremap <C-t>   :tabnew<CR>
+" tab navigation like firefox in 'insert' mode
+" inoremap <S-tab> <Esc>:tabprevious<CR>i
+" inoremap <tab>   <Esc>:tabnext<CR>i
+inoremap <C-t>   <Esc>:tabnew<CR>																  
+
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+		  \ | wincmd p | diffthis
+endif
+
+" this is necessary for go-vim plugin commands to work
+filetype plugin on
+
+" enable folding based on syntax
+set foldmethod=syntax " disable with 'zi' or ':set nofoldenable'
