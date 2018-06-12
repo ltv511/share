@@ -21,6 +21,8 @@ colorscheme darkblue
 set scrolloff=5
 
 " split to the right and below with vsp and sp, respectively, since this is more natural than the defaults
+" ':sp' and ':vsp' create horizontal and vertical splits. 'Ctrl+w + <arrow>'
+" can be used to switch between windows.
 set splitright
 set splitbelow
 
@@ -69,7 +71,7 @@ set ruler		" show the cursor position all the time
 set showcmd		" display incomplete commands
 set incsearch		" do incremental searching
 
-" add line numbers
+" add line numbers. ':set nonu' to disable.
 set number
 
 " allow backspacing over everything in insert mode
@@ -97,3 +99,8 @@ filetype plugin on
 
 " enable folding based on syntax
 set foldmethod=syntax " disable with 'zi' or ':set nofoldenable'
+" set foldlevel automatically to the max for a particular file when opening.
+" 'zm' decreases the fold level, and 'zr' increases the foldlevel.
+autocmd BufWinEnter * let &foldlevel = max(map(range(1, line('$')), 'foldlevel(v:val)'))
+
+" YOUR CUSTOMIZATIONS
