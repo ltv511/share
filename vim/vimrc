@@ -1,6 +1,6 @@
 " Maintainer: Luke Valenta
 " Tested: Mac OS X 10.12.6, Debian GNU/Linux 8.10 (jessie)
-" Last Modified: June 11, 2018
+" Last Modified: Aug 2, 2018
 
 " detect if terminal has color
 if $TERM == "xterm-256color"
@@ -103,4 +103,7 @@ set foldmethod=syntax " disable with 'zi' or ':set nofoldenable'
 " 'zm' decreases the fold level, and 'zr' increases the foldlevel.
 autocmd BufWinEnter * let &foldlevel = max(map(range(1, line('$')), 'foldlevel(v:val)'))
 
+" use an alternative backup and temporary file location
+set backupdir=~/.vim/backup//
+set directory=~/.vim/backup//
 " YOUR CUSTOMIZATIONS
