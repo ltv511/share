@@ -55,6 +55,19 @@ if has("autocmd")
     \   exe "normal! g`\"" |
     \ endif
 
+  " SQL files
+  autocmd FileType sql setlocal shiftwidth=2 softtabstop=2 expandtab
+  "
+  " yaml files
+  au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
+  autocmd FileType yaml setlocal shiftwidth=2 softtabstop=2 expandtab
+
+  " C files
+  autocmd FileType c setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+
+  " Javascript files
+  autocmd FileType javascript setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+
   augroup END
 
 else
@@ -77,6 +90,9 @@ set number
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
+" stop inserting a newline at the end of files
+set nofixendofline
+
 " tab navigation like firefox in 'normal' mode
 nnoremap <S-tab> :tabprevious<CR>
 nnoremap <tab>   :tabnext<CR>
@@ -97,11 +113,38 @@ endif
 " this is necessary for go-vim plugin commands to work
 filetype plugin on
 
+" run :RustFmt when saving a buffer for rust files
+let g:rustfmt_autosave = 1
+
 " enable folding based on syntax
 set foldmethod=syntax " disable with 'zi' or ':set nofoldenable'
 " set foldlevel automatically to the max for a particular file when opening.
 " 'zm' decreases the fold level, and 'zr' increases the foldlevel.
 autocmd BufWinEnter * let &foldlevel = max(map(range(1, line('$')), 'foldlevel(v:val)'))
+
+" commands to show or remove unwanted whitespace
+function ShowSpaces(...)
+  let @/='\v(\s+$)|( +\ze\t)'
+  let oldhlsearch=&hlsearch
+  if !a:0
+    let &hlsearch=!&hlsearch
+  else
+    let &hlsearch=a:1
+  end
+  return oldhlsearch
+endfunction
+
+function TrimSpaces() range
+  let oldhlsearch=ShowSpaces(1)
+  execute a:firstline.",".a:lastline."substitute ///gec"
+  let &hlsearch=oldhlsearch
+endfunction
+
+command -bar -nargs=? ShowSpaces call ShowSpaces(<args>)
+command -bar -nargs=0 -range=% TrimSpaces <line1>,<line2>call TrimSpaces()
+nnoremap <F12>     :ShowSpaces 1<CR>
+nnoremap <S-F12>   m`:TrimSpaces<CR>``
+vnoremap <S-F12>   :TrimSpaces<CR>
 
 " use an alternative backup and temporary file location
 set backupdir=~/.vim/backup//
